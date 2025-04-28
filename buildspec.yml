@@ -1,4 +1,5 @@
-version: 0.2
+version: 0.0
+os: linux
 
 phases:
   install:
@@ -11,6 +12,10 @@ phases:
     commands:
       - echo Building the Java application
       - mvn clean package
+      - ls -l target/  # This will list the contents of the target directory to help debug
+  post_build:
+    commands:
+      - echo Build completed successfully!
 artifacts:
   files:
-    - target/*.war
+    - target/*.war  # This assumes the WAR file is generated in the target folder; adjust if necessary
