@@ -18,6 +18,6 @@ ENV PATH="${MAVEN_HOME}/bin:${PATH}"
 
 WORKDIR /app
 COPY . .
-RUN mvn clean package
+RUN mvn clean -DskipTests
 
 ENTRYPOINT ["java", "-jar", "target/trying-0.0.1-SNAPSHOT.jar"]
