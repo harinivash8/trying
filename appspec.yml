@@ -1,11 +1,22 @@
-version: 0.0
-os: linux
-files:
-  - source: /target/twig-0.0.4.war
-    destination: /home/ec2-user/
-    overwrite: true
-hooks:
-  AfterInstall:
-    - location: scripts/deploy.sh
-      timeout: 300
-      runas: ec2-user
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto11
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Compiling the Java code...
+      - mvn clean package
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - target/*.war
+    - appspec.yml
+    - scripts/**/*
+    - Dockerfile
+  discard-paths: no
