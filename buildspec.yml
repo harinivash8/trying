@@ -6,9 +6,9 @@ phases:
       java: corretto11 # Or another compatible JDK
     commands:
       - echo "Installing Maven..."
-      - wget https://dlcdn.apache.org/maven/maven-3/3.9.7/binaries/apache-maven-3.9.7-bin.tar.gz # <--- **UPDATE THIS URL FROM MAVEN WEBSITE**
-      - tar -xvf apache-maven-3.9.7-bin.tar.gz -C /opt
-      - ln -s /opt/apache-maven-3.9.7 /opt/maven
+      - wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz -P /tmp
+      - tar -xvf /tmp/apache-maven-3.9.9-bin.tar.gz -C /opt
+      - ln -s /opt/apache-maven-3.9.9 /opt/maven
       - export MAVEN_HOME=/opt/maven
       - export PATH=$PATH:$MAVEN_HOME/bin
       - echo "Maven and Java installed."
