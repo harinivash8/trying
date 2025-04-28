@@ -1,21 +1,33 @@
-version: 0.0
-os: linux
+version: 0.2
 
 phases:
   install:
     runtime-versions:
-      java: corretto17
+      java: corretto17 # Or another compatible JDK
     commands:
-      - echo Installing Maven
-      - yum install -y maven
+      - echo "Installing Maven..."
+      - wget https://dlcdn.apache.org/maven/maven-3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
+      - tar -xvf apache-maven-3.9.6-bin.tar.gz -C /opt
+      - ln -s /opt/apache-maven-3.9.6 /opt/maven
+      - export MAVEN_HOME=/opt/maven
+      - export PATH=$PATH:$MAVEN_HOME/bin
+      - echo "Maven and Java installed."
+      - mvn --version # Verify installation
   build:
     commands:
-      - echo Building the Java application
+      - echo "Build started on `date`"
+      - echo "Compiling the Java code..."
       - mvn clean package
-      - ls -l target/  # This will list the contents of the target directory to help debug
+      - echo "Listing contents of target/ directory..."
+      - ls -l target/ # This will show the contents of the target directory to ensure the WAR file is there
   post_build:
     commands:
-      - echo Build completed successfully!
+      - echo "Build completed on `date`"
+
 artifacts:
   files:
-    - target/*.war  # This assumes the WAR file is generated in the target folder; adjust if necessary
+    - target/*.war
+    - appspec.yml
+    - scripts/**/*
+    - Dockerfile
+  discard-paths: no
