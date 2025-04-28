@@ -3,15 +3,12 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto11 # Or another compatible JDK (e.g., openjdk17)
+      java: corretto11 # Or another compatible JDK
     commands:
       - echo "Installing Maven..."
-      # Get the latest stable Maven version from the Apache Maven website
-      - LATEST_MAVEN_VERSION=$(curl -s https://maven.apache.org/download.cgi | grep -oP 'maven-\d+\.\d+\.\d+-bin\.tar\.gz' | head -n 1 | sed 's/-bin\.tar\.gz//')
-      - echo "Downloading Maven version: $LATEST_MAVEN_VERSION"
-      - wget "https://dlcdn.apache.org/maven/maven-3/${LATEST_MAVEN_VERSION}/binaries/apache-maven-${LATEST_MAVEN_VERSION}-bin.tar.gz" -P /tmp
-      - tar -xvf /tmp/apache-maven-${LATEST_MAVEN_VERSION}-bin.tar.gz -C /opt
-      - ln -s /opt/apache-maven-${LATEST_MAVEN_VERSION} /opt/maven
+      - wget https://dlcdn.apache.org/maven/maven-3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
+      - tar -xvf apache-maven-3.9.6-bin.tar.gz -C /opt
+      - ln -s /opt/apache-maven-3.9.6 /opt/maven
       - export MAVEN_HOME=/opt/maven
       - export PATH=$PATH:$MAVEN_HOME/bin
       - echo "Maven and Java installed."
