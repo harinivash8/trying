@@ -8,11 +8,11 @@
     <groupId>j4np</groupId>
     <artifactId>twig</artifactId>
     <version>${revision}</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <revision>0.0.4</revision>
         <version>1.1.1</version>
     </properties>
