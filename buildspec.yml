@@ -3,29 +3,14 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto11 # Or another compatible JDK
+      java: corretto11
     commands:
-      - echo "Installing Maven..."
-      - wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz -P /tmp
-      - tar -xvf /tmp/apache-maven-3.9.9-bin.tar.gz -C /opt
-      - ln -s /opt/apache-maven-3.9.9 /opt/maven
-      - export MAVEN_HOME=/opt/maven
-      - export PATH=$PATH:$MAVEN_HOME/bin
-      - echo "Maven and Java installed."
-      - mvn --version # Verify installation
+      - echo Installing Maven
+      - yum install -y maven
   build:
     commands:
-      - echo "Build started on `date`"
-      - echo "Compiling the Java code..."
+      - echo Building the Java application
       - mvn clean package
-  post_build:
-    commands:
-      - echo "Build completed on `date`"
-
 artifacts:
   files:
     - target/*.war
-    - appspec.yml
-    - scripts/**/*
-    - Dockerfile
-  discard-paths: no
