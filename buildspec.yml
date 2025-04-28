@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto17 # Or another compatible JDK
+      java: corretto11 # Or another compatible JDK
     commands:
       - echo "Installing Maven..."
       - wget https://dlcdn.apache.org/maven/maven-3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
