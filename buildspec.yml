@@ -3,15 +3,24 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto11
+      java: corretto11 # Or another compatible JDK
+    commands:
+      - echo "Installing Maven..."
+      - wget https://dlcdn.apache.org/maven/maven-3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
+      - tar -xvf apache-maven-3.9.6-bin.tar.gz -C /opt
+      - ln -s /opt/apache-maven-3.9.6 /opt/maven
+      - export MAVEN_HOME=/opt/maven
+      - export PATH=$PATH:$MAVEN_HOME/bin
+      - echo "Maven and Java installed."
+      - mvn --version # Verify installation
   build:
     commands:
-      - echo Build started on `date`
-      - echo Compiling the Java code...
+      - echo "Build started on `date`"
+      - echo "Compiling the Java code..."
       - mvn clean package
   post_build:
     commands:
-      - echo Build completed on `date`
+      - echo "Build completed on `date`"
 
 artifacts:
   files:
