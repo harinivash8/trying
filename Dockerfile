@@ -1,11 +1,9 @@
-FROM tomcat:9-jdk11
-
-# Remove default Tomcat applications
-RUN rm -rf /usr/local/tomcat/webapps/*
-
-# Copy your WAR file
-COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
-
-EXPOSE 8080
-
-CMD ["catalina.sh", "run"]
+# Example for an Ubuntu-based image
+FROM ubuntu:latest
+RUN apt-get update && apt-get install -y maven openjdk-11-jdk
+ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV PATH="$PATH:$JAVA_HOME/bin:/opt/maven/bin"
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package
