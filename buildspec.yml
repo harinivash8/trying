@@ -3,26 +3,18 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto11 # Or another compatible JDK
+      java: corretto11
     commands:
       - echo "Installing Maven..."
-      - wget https://dlcdn.apache.org/maven/maven-3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz
-      - tar -xvf apache-maven-3.9.6-bin.tar.gz -C /opt
-      - ln -s /opt/apache-maven-3.9.6 /opt/maven
-      - export MAVEN_HOME=/opt/maven
-      - export PATH=$PATH:$MAVEN_HOME/bin
-      - echo "Maven and Java installed."
-      - mvn --version # Verify installation
+      - sudo amazon-linux-extras install maven2 -y
+      - mvn --version # Verify Maven installation
   build:
     commands:
-      - echo "Build started on `date`"
-      - echo "Compiling the Java code..."
+      - echo "Building the application..."
       - mvn clean package
-      - echo "Listing contents of target/ directory..."
-      - ls -l target/ # This will show the contents of the target directory to ensure the WAR file is there
   post_build:
     commands:
-      - echo "Build completed on `date`"
+      - echo "Build completed."
 
 artifacts:
   files:
