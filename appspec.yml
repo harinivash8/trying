@@ -1,22 +1,18 @@
-version: 0.2
-
-phases:
-  install:
-    runtime-versions:
-      java: corretto11
-  build:
-    commands:
-      - echo Build started on `date`
-      - echo Compiling the Java code...
-      - mvn clean package
-  post_build:
-    commands:
-      - echo Build completed on `date`
-
-artifacts:
-  files:
-    - target/*.war
-    - appspec.yml
-    - scripts/**/*
-    - Dockerfile
-  discard-paths: no
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ec2-user/trying
+hooks:
+  ApplicationStop:
+    - location: scripts/stop_application.sh
+      timeout: 300
+      runas: root
+  BeforeInstall:
+    - location: scripts/before_install.sh
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: scripts/start_application.sh
+      timeout: 300
+      runas: root
