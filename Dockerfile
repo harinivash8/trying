@@ -1,14 +1,11 @@
-# Use an official Tomcat base image
-FROM tomcat:9-jdk17
+FROM tomcat:9-jdk11
 
-# Set the maintainer label
-LABEL maintainer="you@example.com"
+# Remove default Tomcat applications
+RUN rm -rf /usr/local/tomcat/webapps/*
 
-# Copy your .war file into the Tomcat webapps directory
-COPY target/twig-0.0.4.war /usr/local/tomcat/webapps/ROOT.war
+# Copy your WAR file
+COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
 
-# Expose the Tomcat port
 EXPOSE 8080
 
-# Start Tomcat when the container runs
 CMD ["catalina.sh", "run"]
