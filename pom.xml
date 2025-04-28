@@ -2,10 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" 
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
-         
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    
     <groupId>j4np</groupId>
     <artifactId>twig</artifactId>
     <version>${revision}</version>
@@ -18,29 +17,20 @@
         <version>1.1.1</version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>clas12-maven</id>
-            <url>https://clasweb.jlab.org/clas12maven/j4np/maven</url>
-        </repository>
-        <repository>
-            <id>clas12-root</id>
-            <url>https://clasweb.jlab.org/clas12maven/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>j4np</groupId>
             <artifactId>j4np-ui</artifactId>
             <version>${version}</version>
         </dependency>
-        <dependency>
-            <groupId>j4np</groupId>
-            <artifactId>j4np-graphics</artifactId>
-            <version>1.1.1</version>
-        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>clas12-maven</id>
+            <url>https://clasweb.jlab.org/clas12maven/j4np/maven</url>
+        </repository>
+    </repositories>
 
     <distributionManagement>
         <repository>
@@ -84,5 +74,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
