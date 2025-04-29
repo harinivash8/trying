@@ -3,23 +3,23 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Setting up Docker...
-      - sudo yum update -y
+      - echo Installing Docker...
       - sudo yum install -y docker
-      - sudo service docker start
-      - sudo usermod -aG docker ec2-user
+      - sudo systemctl start docker  # Corrected command to start Docker
+      - sudo usermod -aG docker ec2-user  # Add ec2-user to Docker group
+      - docker info  # Verify Docker installation
   build:
     commands:
       - echo Building WAR file...
-      - mvn clean package -Drevision=0.0.4
+      - mvn clean package -Drevision=0.0.4  # Build WAR file with Maven
       - echo Building Docker image...
-      - docker build -t twig-tomcat .
+      - docker build -t twig-tomcat .  # Build Docker image using Dockerfile
   post_build:
     commands:
-      - echo Uploading Docker image to EC2...
-      - scp -i <path-to-your-ec2-key> -o StrictHostKeyChecking=no target/twig-0.0.4.war ec2-user@<your-ec2-ip>:/home/ec2-user/twig-0.0.4.war
-      - ssh -i <path-to-your-ec2-key> -o StrictHostKeyChecking=no ec2-user@<your-ec2-ip> 'bash /home/ec2-user/scripts/start_container.sh'
+      - echo Uploading WAR and starting Docker container on EC2...
+      - scp -i <path-to-your-ec2-key> -o StrictHostKeyChecking=no target/twig-0.0.4.war ec2-user@<your-ec2-ip>:/home/ec2-user/twig-0.0.4.war  # SCP to EC2
+      - ssh -i <path-to-your-ec2-key> -o StrictHostKeyChecking=no ec2-user@<your-ec2-ip> 'bash /home/ec2-user/scripts/start_container.sh'  # Start Docker container
 artifacts:
   files:
     - appspec.yml
-    - scripts/start_container.sh
+    - scripts/start_container.sh  # Include deployment scripts in the artifact
