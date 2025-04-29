@@ -1,9 +1,13 @@
-FROM tomcat:9.0-jdk21
+FROM amazoncorretto:21
 
-RUN rm -rf /usr/local/tomcat/webapps/*
+RUN yum install -y unzip curl tar && \
+    curl -O https://downloads.apache.org/tomcat/tomcat-9/v9.0.85/bin/apache-tomcat-9.0.85.tar.gz && \
+    tar -xzf apache-tomcat-9.0.85.tar.gz && \
+    mv apache-tomcat-9.0.85 /opt/tomcat && \
+    rm -rf /opt/tomcat/webapps/*
 
-COPY target/twig-0.0.4.war /usr/local/tomcat/webapps/ROOT.war
+COPY target/*.war /opt/tomcat/webapps/ROOT.war
 
 EXPOSE 8080
 
-CMD ["catalina.sh", "run"]
+CMD ["/opt/tomcat/bin/catalina.sh", "run"]
