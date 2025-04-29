@@ -11,19 +11,28 @@ phases:
       - ln -s /opt/apache-maven-3.8.6 /opt/maven
       - export MAVEN_HOME=/opt/maven
       - export PATH=$PATH:$MAVEN_HOME/bin
-      - mvn --version # Verify Maven installation
+      - mvn --version
+
   build:
     commands:
       - echo "Building the application..."
       - mvn clean package
+
   post_build:
     commands:
-      - echo "Build completed."
+      - echo "Extracting deployment files from WAR..."
+      - mkdir deploy
+      - cd deploy
+      - jar -xf ../target/twig-0.0.4.war
+      - cd ..
+      - echo "Copying WAR for reference..."
+      - cp target/twig-0.0.4.war deploy/target/
 
 artifacts:
   files:
-    - target/*.war
     - appspec.yml
     - scripts/**/*
     - Dockerfile
+    - target/twig-0.0.4.war
   discard-paths: no
+  base-directory: deploy
