@@ -1,8 +1,8 @@
-FROM tomcat:9-jdk21
+FROM tomcat:9.0-jdk21
 
-WORKDIR /app
+RUN rm -rf /usr/local/tomcat/webapps/*
 
-COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
+COPY target/twig-0.0.4.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080
 
