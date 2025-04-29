@@ -1,8 +1,8 @@
 FROM tomcat:9-jdk17
 
-RUN rm -rf /usr/local/tomcat/webapps/*
+WORKDIR /app
 
-COPY app.war /usr/local/tomcat/webapps/ROOT.war
+COPY target/twig-0.0.4.jar /app/twig-0.0.4.jar
 
 EXPOSE 8080
 
