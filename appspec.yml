@@ -1,24 +1,16 @@
-version: 0.0
-os: linux
 files:
-  - source: target/*.jar
-    destination: /opt/app
-  - source: .
-    destination: /opt/app/source
+  - source: /
+    destination: /home/ec2-user/trying
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
       timeout: 300
       runas: root
-  AfterInstall:
-    - location: scripts/after_install.sh
-      timeout: 300
-      runas: root
   ApplicationStart:
-    - location: scripts/application_start.sh
+    - location: scripts/start_application.sh
       timeout: 300
       runas: root
   ApplicationStop:
-    - location: scripts/application_stop.sh
+    - location: scripts/stop_application.sh
       timeout: 300
       runas: root
