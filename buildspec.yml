@@ -1,29 +1,25 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      java: corretto21
+  pre_build:
     commands:
-      - echo "Installing Maven..."
-      - wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
-      - tar -xvf apache-maven-3.8.6-bin.tar.gz -C /opt
-      - ln -s /opt/apache-maven-3.8.6 /opt/maven
-      - export MAVEN_HOME=/opt/maven
-      - export PATH=$PATH:$MAVEN_HOME/bin
-      - mvn --version
+      - echo Setting up Docker...
+      - sudo yum update -y
+      - sudo yum install -y docker
+      - sudo service docker start
+      - sudo usermod -aG docker ec2-user
   build:
     commands:
-      - echo "Building the application..."
-      - mvn clean package
+      - echo Building WAR file...
+      - mvn clean package -Drevision=0.0.4
+      - echo Building Docker image...
+      - docker build -t twig-tomcat .
   post_build:
     commands:
-      - echo "Setting executable permissions on deployment scripts..."
-      - chmod +x scripts/*.sh
-      - echo "Packaging files into twig-0.0.4.zip..."
-      - zip -r twig-0.0.4.zip appspec.yml scripts/ Dockerfile target/
-
+      - echo Uploading Docker image to EC2...
+      - scp -i <path-to-your-ec2-key> -o StrictHostKeyChecking=no target/twig-0.0.4.war ec2-user@<your-ec2-ip>:/home/ec2-user/twig-0.0.4.war
+      - ssh -i <path-to-your-ec2-key> -o StrictHostKeyChecking=no ec2-user@<your-ec2-ip> 'bash /home/ec2-user/scripts/start_container.sh'
 artifacts:
   files:
-    - twig-0.0.4.zip
-  discard-paths: yes
+    - appspec.yml
+    - scripts/start_container.sh
