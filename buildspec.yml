@@ -3,23 +3,18 @@ version: 0.2
 phases:
   pre_build:
     commands:
-      - echo Installing Docker...
-      - sudo yum install -y docker
-      - sudo systemctl start docker  # Corrected command to start Docker
-      - sudo usermod -aG docker ec2-user  # Add ec2-user to Docker group
-      - docker info  # Verify Docker installation
+      - echo Logging in to CodeBuild environment...
+      - docker version  # Check Docker is already running
   build:
     commands:
       - echo Building WAR file...
-      - mvn clean package -Drevision=0.0.4  # Build WAR file with Maven
+      - mvn clean package -Drevision=0.0.4
       - echo Building Docker image...
-      - docker build -t twig-tomcat .  # Build Docker image using Dockerfile
+      - docker build -t twig-tomcat .
   post_build:
     commands:
-      - echo Uploading WAR and starting Docker container on EC2...
-      - scp -i <path-to-your-ec2-key> -o StrictHostKeyChecking=no target/twig-0.0.4.war ec2-user@<your-ec2-ip>:/home/ec2-user/twig-0.0.4.war  # SCP to EC2
-      - ssh -i <path-to-your-ec2-key> -o StrictHostKeyChecking=no ec2-user@<your-ec2-ip> 'bash /home/ec2-user/scripts/start_container.sh'  # Start Docker container
+      - echo "Ready to deploy"
 artifacts:
   files:
     - appspec.yml
-    - scripts/start_container.sh  # Include deployment scripts in the artifact
+    - scripts/start_container.sh
