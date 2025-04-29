@@ -4,7 +4,7 @@ mkdir -p /home/ec2-user/trying
 
 # Install Docker if not installed
 if ! [ -x "$(command -v docker)" ]; then
-  amazon-linux-extras install docker -y
+  yum install docker -y
   service docker start
   usermod -a -G docker ec2-user
   systemctl enable docker
