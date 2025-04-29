@@ -1,25 +1,12 @@
+
 #!/bin/bash
-set -e
-
-echo "Before installation script started"
-
 # Create application directory if it doesn't exist
-if [ ! -d /opt/app ]; then
-  mkdir -p /opt/app
-  echo "Created application directory"
-else
-  echo "Application directory already exists"
-fi
+mkdir -p /home/ec2-user/trying
 
-# Install Java 21 if not already installed (Amazon Linux 2)
-if ! command -v java &> /dev/null || ! java -version 2>&1 | grep -q "version \"21"; then
-  echo "Installing Java 21"
-  amazon-linux-extras install java-openjdk21 -y || {
-    echo "Could not install Java via amazon-linux-extras, trying alternative method"
-    yum install -y java-21-amazon-corretto
-  }
-else
-  echo "Java 21 is already installed"
+# Install Docker if not installed
+if ! [ -x "$(command -v docker)" ]; then
+  amazon-linux-extras install docker -y
+  service docker start
+  usermod -a -G docker ec2-user
+  systemctl enable docker
 fi
-
-echo "Before installation script completed"
