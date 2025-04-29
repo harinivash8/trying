@@ -1,18 +1,30 @@
+
 version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      java: corretto21
     commands:
-      - echo Installing dependencies
+      - echo "Installing Maven..."
+      - wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+      - tar -xvf apache-maven-3.8.6-bin.tar.gz -C /opt
+      - ln -s /opt/apache-maven-3.8.6 /opt/maven
+      - export MAVEN_HOME=/opt/maven
+      - export PATH=$PATH:$MAVEN_HOME/bin
+      - mvn --version # Verify Maven installation
   build:
     commands:
-      - echo Building application
+      - echo "Building the application..."
+      - mvn clean package
+  post_build:
+    commands:
+      - echo "Build completed."
 
 artifacts:
   files:
+    - target/*.war
     - appspec.yml
     - scripts/**/*
     - Dockerfile
-    - target/*.war
   discard-paths: no
-  base-directory: twig.war
