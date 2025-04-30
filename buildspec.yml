@@ -5,25 +5,29 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo "Installing Maven..."
-      - wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
-      - tar -xvf apache-maven-3.8.6-bin.tar.gz -C /opt
-      - ln -s /opt/apache-maven-3.8.6 /opt/maven
-      - export MAVEN_HOME=/opt/maven
-      - export PATH=$PATH:$MAVEN_HOME/bin
-      - mvn --version # Verify Maven installation
+      - echo "Installing Docker and dependencies..."
+      - apt-get update && apt-get install -y docker.io
+
+  pre_build:
+    commands:
+      - echo "Building the Java application..."
+      - mvn clean package
+
   build:
     commands:
-      - echo "Building the application..."
-      - mvn clean package
+      - echo "Building Docker image..."
+      - docker build --build-arg VERSION=${VERSION} -t twig-app .
+      - docker save -o twig-app.tar twig-app
+
   post_build:
     commands:
-      - echo "Build completed."
+      - echo "Uploading Docker image to EC2..."
+      - mkdir -p ~/.ssh
+      - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+      - chmod 600 ~/.ssh/id_rsa
+      - scp -o StrictHostKeyChecking=no twig-app.tar ec2-user@$EC2_IP:/home/ec2-user/
+      - ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "docker load -i twig-app.tar && ./deploy.sh"
 
-artifacts:
-  files:
-    - target/*.war
-    - appspec.yml
-    - scripts/**/*
-    - Dockerfile
-  discard-paths: no
+env:
+  variables:
+    VERSION: "0.0.4"   # Match your pom.xml version
