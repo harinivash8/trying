@@ -4,26 +4,20 @@ phases:
   install:
     runtime-versions:
       java: corretto17
+      docker: 20
     commands:
-      - echo "Installing Maven..."
-      - wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
-      - tar -xvf apache-maven-3.8.6-bin.tar.gz -C /opt
-      - ln -s /opt/apache-maven-3.8.6 /opt/maven
-      - export MAVEN_HOME=/opt/maven
-      - export PATH=$PATH:$MAVEN_HOME/bin
-      - mvn --version # Verify Maven installation
+      - echo Installing Maven...
+      - yum install -y maven
   build:
     commands:
-      - echo "Building the application..."
-      - mvn clean package
+      - echo Building shaded JAR...
+      - mvn clean package -DskipTests
+      - echo Building Docker image...
+      - docker build -t twig-app .
   post_build:
     commands:
-      - echo "Build completed."
+      - echo Build complete.
 
 artifacts:
   files:
-    - target/*.war
-    - appspec.yml
-    - scripts/**/*
-    - Dockerfile
-  discard-paths: no
+    - target/twig-0.0.4-core.jar
