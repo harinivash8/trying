@@ -5,22 +5,20 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      # Install Maven
-      echo Installing Maven...
-      curl -sL https://apache.claz.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz | tar xz -C /opt
-      export PATH=$PATH:/opt/apache-maven-3.8.4/bin
+      - echo Installing Maven...
+      - curl -sL https://apache.claz.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz | tar xz -C /opt
+      - export PATH=$PATH:/opt/apache-maven-3.8.4/bin
   pre_build:
     commands:
-      echo Pre-build phase: Setting up environment...
-      # Ensure correct versions of dependencies are resolved
-      mvn dependency:resolve
+      - echo Pre-build phase: Setting up environment...
+      - mvn dependency:resolve
   build:
     commands:
-      echo Build phase: Running Maven...
-      mvn clean install
+      - echo Build phase: Running Maven...
+      - mvn clean install
   post_build:
     commands:
-      echo Post-build phase: Completed.
+      - echo Post-build phase: Completed.
 
 artifacts:
   files:
