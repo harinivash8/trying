@@ -16,6 +16,35 @@
         <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
+    <!-- You need to add a repository for j4np/twig dependencies -->
+    <repositories>
+        <repository>
+            <id>j4np</id>
+            <url>https://clasweb.jlab.org/clas12maven/</url>
+        </repository>
+        <!-- Add Central and other repositories as needed -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- Add the twig dependency here -->
+        <dependency>
+            <groupId>j4np</groupId>
+            <artifactId>j4np-ui</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <!-- Servlet API - needed for WAR packaging -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <finalName>twig-${project.version}</finalName>
         <plugins>
@@ -36,6 +65,28 @@
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
+            </plugin>
+            <!-- Add the Maven dependency plugin to copy dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>false</overWriteSnapshots>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                            <excludeScope>provided</excludeScope>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
