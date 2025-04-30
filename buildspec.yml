@@ -5,18 +5,23 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo Installing Maven...
-      - yum install -y maven
+      # Install Maven
+      echo Installing Maven...
+      curl -sL https://apache.claz.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz | tar xz -C /opt
+      export PATH=$PATH:/opt/apache-maven-3.8.4/bin
+  pre_build:
+    commands:
+      echo Pre-build phase: Setting up environment...
+      # Ensure correct versions of dependencies are resolved
+      mvn dependency:resolve
   build:
     commands:
-      - echo Building shaded JAR...
-      - mvn clean package -DskipTests
-      - echo Building Docker image...
-      - docker build -t twig-app .
+      echo Build phase: Running Maven...
+      mvn clean install
   post_build:
     commands:
-      - echo Build complete.
+      echo Post-build phase: Completed.
 
 artifacts:
   files:
-    - target/twig-0.0.4-core.jar
+    - target/*.jar
