@@ -4,7 +4,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto21
+      java: corretto17
     commands:
       - echo "Installing Maven..."
       - wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
