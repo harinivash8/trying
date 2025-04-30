@@ -16,6 +16,8 @@ phases:
     commands:
       - echo "Checking Java version..."
       - java -version
+      - echo "Creating necessary directories if they don't exist"
+      - mkdir -p src/main/webapp/WEB-INF
   build:
     commands:
       - echo "Building the application..."
@@ -23,6 +25,7 @@ phases:
   post_build:
     commands:
       - echo "Build completed."
+      - ls -la target/
 
 artifacts:
   files:
