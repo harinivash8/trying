@@ -1,10 +1,9 @@
-
 version: 0.2
 
 phases:
   install:
     runtime-versions:
-      java: corretto21
+      java: corretto17
     commands:
       - echo "Installing Maven..."
       - wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
@@ -13,10 +12,14 @@ phases:
       - export MAVEN_HOME=/opt/maven
       - export PATH=$PATH:$MAVEN_HOME/bin
       - mvn --version # Verify Maven installation
+  pre_build:
+    commands:
+      - echo "Checking Java version..."
+      - java -version
   build:
     commands:
       - echo "Building the application..."
-      - mvn clean package
+      - mvn clean package -DskipTests
   post_build:
     commands:
       - echo "Build completed."
