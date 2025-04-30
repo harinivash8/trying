@@ -6,7 +6,7 @@
     <groupId>j4np</groupId>
     <artifactId>twig</artifactId>
     <version>${revision}</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <dependencies>
       <dependency>
