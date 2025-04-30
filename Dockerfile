@@ -1,10 +1,7 @@
-FROM tomcat:9-jdk17
 
-# Clean default webapps
-RUN rm -rf /usr/local/tomcat/webapps/*
+FROM tomcat:9-jdk21
 
-# Copy your WAR file - with specific filename pattern
-COPY target/twig-*.war /usr/local/tomcat/webapps/ROOT.war
+COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
 
 EXPOSE 8080
 
