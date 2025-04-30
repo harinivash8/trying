@@ -2,7 +2,7 @@ FROM tomcat:9-jdk17
 
 WORKDIR /app
 
-COPY target/twig-0.0.4-core.jar app.jar
+COPY target/twig-0.0.4-core.jar /usr/local/tomcat/webapps/ROOT.jar
 
 EXPOSE 8080
 
