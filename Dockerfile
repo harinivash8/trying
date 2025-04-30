@@ -1,4 +1,4 @@
-FROM tomcat:9-jdk21
+FROM tomcat:9-jdk17
 
 WORKDIR /app
 
