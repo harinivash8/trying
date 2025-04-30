@@ -1,8 +1,12 @@
 # Build stage
-FROM maven:3.8-openjdk-21 AS build
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY pom.xml .
+# Download all dependencies
+RUN mvn dependency:go-offline -B
+# Copy source code
 COPY src ./src
+# Package the application
 RUN mvn clean package
 
 # Deployment stage
