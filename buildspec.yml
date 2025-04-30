@@ -5,21 +5,25 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
-      - echo Installing Maven...
-      - curl -sL https://apache.claz.org/maven/maven-3/3.8.4/binaries/apache-maven-3.8.4-bin.tar.gz | tar xz -C /opt
-      - export PATH=$PATH:/opt/apache-maven-3.8.4/bin
-  pre_build:
-    commands:
-      - echo Pre-build phase: Setting up environment...
-      - mvn dependency:resolve
+      - echo "Installing Maven..."
+      - wget https://archive.apache.org/dist/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz
+      - tar -xvf apache-maven-3.8.6-bin.tar.gz -C /opt
+      - ln -s /opt/apache-maven-3.8.6 /opt/maven
+      - export MAVEN_HOME=/opt/maven
+      - export PATH=$PATH:$MAVEN_HOME/bin
+      - mvn --version # Verify Maven installation
   build:
     commands:
-      - echo Build phase: Running Maven...
-      - mvn clean install
+      - echo "Building the application..."
+      - mvn clean package
   post_build:
     commands:
-      - echo Post-build phase: Completed.
+      - echo "Build completed."
 
 artifacts:
   files:
-    - target/*.jar
+    - target/*.war
+    - appspec.yml
+    - scripts/**/*
+    - Dockerfile
+  discard-paths: no
