@@ -1,51 +1,27 @@
-version: 0.2
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /opt/twig-app
+    overwrite: yes
 
-phases:
-  install:
-    runtime-versions:
-      java: corretto21
-    commands:
-      # Install Maven explicitly
-      - echo Installing Maven...
-      - export MAVEN_VERSION=3.9.6
-      - wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -P /tmp
-      - tar xf /tmp/apache-maven-${MAVEN_VERSION}-bin.tar.gz -C /opt
-      - ln -s /opt/apache-maven-${MAVEN_VERSION} /opt/maven
-      - export M2_HOME=/opt/maven
-      - export MAVEN_HOME=/opt/maven
-      - export PATH=${M2_HOME}/bin:${PATH}
-      - echo Maven installed at $(which mvn)
-      - mvn -v
-      - java -version
-      
-  pre_build:
-    commands:
-      - echo Pre-build phase started...
-      - echo $JAVA_HOME
-      - echo PATH=$PATH
-      - mvn -v
-      
-  build:
-    commands:
-      - echo Build started on `date`
-      - mvn clean package
-      
-  post_build:
-    commands:
-      - echo Build completed on `date`
-      # Create the tar file specifically expected by CodeDeploy
-      - mkdir -p build-output
-      - cp target/twig-0.0.4-core.jar build-output/
-      - cp -r scripts/* build-output/ || echo "No scripts directory found"
-      - cp appspec.yml build-output/ || echo "No appspec.yml found"
-      - cp pom.xml build-output/
-      - cd build-output && tar -cf ../twig-app.tar .
-      - cd .. && cp twig-app.tar build-output/
-      - ls -la build-output/
-      
-artifacts:
-  files:
-    - twig-app.tar
-    - build-output/**/*
-    - appspec.yml
-  discard-paths: no
+permissions:
+  - object: /opt/twig-app
+    pattern: "**"
+    owner: ec2-user
+    group: ec2-user
+    mode: 755
+
+hooks:
+  BeforeInstall:
+    - location: scripts/before-install.sh
+      timeout: 300
+      runas: root
+  ApplicationStart:
+    - location: scripts/application-start.sh
+      timeout: 300
+      runas: root
+  ApplicationStop:
+    - location: scripts/application-stop.sh
+      timeout: 300
+      runas: root
