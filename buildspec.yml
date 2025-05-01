@@ -24,6 +24,8 @@ phases:
       - echo $JAVA_HOME
       - echo PATH=$PATH
       - mvn -v
+      # Create scripts directory if it doesn't exist
+      - mkdir -p scripts
       
   build:
     commands:
@@ -33,19 +35,128 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      # Create the tar file specifically expected by CodeDeploy
-      - mkdir -p build-output
-      - cp target/twig-0.0.4-core.jar build-output/
-      - cp -r scripts/* build-output/ || echo "No scripts directory found"
-      - cp appspec.yml build-output/ || echo "No appspec.yml found"
-      - cp pom.xml build-output/
-      - cd build-output && tar -cf ../twig-app.tar .
-      - cd .. && cp twig-app.tar build-output/
-      - ls -la build-output/
+      # Create the scripts directory and files if they don't exist
+      - echo "Creating deployment scripts..."
+      - mkdir -p scripts
+      
+      # Create the before-install.sh script
+      - |
+        cat > scripts/before-install.sh << 'EOL'
+        #!/bin/bash
+        # Install Java 21 if not already installed
+        if ! command -v java &> /dev/null || ! java -version 2>&1 | grep -q "version \"21"; then
+            echo "Installing Java 21..."
+            sudo amazon-linux-extras install java-openjdk21 -y || sudo yum install -y java-21-amazon-corretto
+        fi
+
+        # Create application directory if it doesn't exist
+        mkdir -p /opt/twig-app
+
+        # Clean up previous deployment if exists
+        if [ -d "/opt/twig-app/target" ]; then
+            rm -rf /opt/twig-app/target
+        fi
+
+        # Ensure permissions are correct
+        chown -R ec2-user:ec2-user /opt/twig-app
+        chmod -R 755 /opt/twig-app
+        EOL
+      
+      # Create the application-start.sh script
+      - |
+        cat > scripts/application-start.sh << 'EOL'
+        #!/bin/bash
+        # Change to application directory
+        cd /opt/twig-app
+
+        # Start the application in the background and redirect output
+        nohup java -jar twig-0.0.4-core.jar > /opt/twig-app/application.log 2>&1 &
+
+        # Save the process ID
+        echo $! > /opt/twig-app/application.pid
+
+        echo "Application started with PID $(cat /opt/twig-app/application.pid)"
+        EOL
+      
+      # Create the application-stop.sh script
+      - |
+        cat > scripts/application-stop.sh << 'EOL'
+        #!/bin/bash
+        # Check if the PID file exists
+        if [ -f /opt/twig-app/application.pid ]; then
+            pid=$(cat /opt/twig-app/application.pid)
+            
+            # Check if the process is still running
+            if ps -p $pid > /dev/null; then
+                echo "Stopping application with PID $pid"
+                kill $pid
+                # Wait for the process to terminate gracefully
+                sleep 5
+                
+                # Force kill if still running
+                if ps -p $pid > /dev/null; then
+                    echo "Force killing application with PID $pid"
+                    kill -9 $pid
+                fi
+            else
+                echo "Application not running with PID $pid"
+            fi
+            
+            # Remove PID file
+            rm -f /opt/twig-app/application.pid
+        else
+            echo "No PID file found, application may not be running"
+            
+            # Try to find and kill any running java processes with the jar name
+            pkill -f "java -jar twig-.*-core.jar" || echo "No matching processes found"
+        fi
+
+        echo "Application stop script completed"
+        EOL
+      
+      # Set execute permissions on scripts
+      - chmod +x scripts/*.sh
+      - ls -la scripts/
+      
+      # Create appspec.yml if it doesn't exist
+      - |
+        cat > appspec.yml << 'EOL'
+        version: 0.0
+        os: linux
+        files:
+          - source: /
+            destination: /opt/twig-app
+            overwrite: yes
+
+        permissions:
+          - object: /opt/twig-app
+            pattern: "**"
+            owner: ec2-user
+            group: ec2-user
+            mode: 755
+
+        hooks:
+          BeforeInstall:
+            - location: scripts/before-install.sh
+              timeout: 300
+              runas: root
+          ApplicationStart:
+            - location: scripts/application-start.sh
+              timeout: 300
+              runas: root
+          ApplicationStop:
+            - location: scripts/application-stop.sh
+              timeout: 300
+              runas: root
+        EOL
+      
+      # Copy the JAR file to the root for direct deployment
+      - cp target/twig-0.0.4-core.jar ./
       
 artifacts:
   files:
-    - twig-app.tar
-    - build-output/**/*
     - appspec.yml
+    - scripts/**/*
+    - twig-0.0.4-core.jar
+    - pom.xml
   discard-paths: no
