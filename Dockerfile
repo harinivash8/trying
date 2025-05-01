@@ -1,15 +1,20 @@
-FROM amazoncorretto:17
-
-# Install X11 and GUI dependencies
-RUN yum install -y libXext libXrender libXtst xorg-x11-server-Xvfb
-
+# Build stage
+FROM eclipse-temurin:17-jdk AS builder
 WORKDIR /app
+COPY . .
+RUN mvn clean package
 
-# Copy the built JAR
-COPY target/twig-${VERSION}-core.jar /app/twig.jar
+# Run stage
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+COPY --from=builder /app/target/twig-*-core.jar /app/twig.jar
 
-# Set up X11 forwarding
-ENV DISPLAY=:99
+# Install X11 dependencies (for GUI)
+RUN apt-get update && apt-get install -y xauth libxrender1 libxtst6
 
-# Start Xvfb and run the app
-CMD Xvfb :99 -screen 0 1024x768x16 & java -jar twig.jar
+# Run in headless mode by default (comment out if GUI is needed)
+CMD ["java", "-Djava.awt.headless=true", "-jar", "twig.jar"]
+
+# Uncomment for GUI support (requires X11 server on host)
+# ENV DISPLAY=:0
+# CMD ["java", "-jar", "twig.jar"]
