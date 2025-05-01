@@ -2,17 +2,24 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto17  # Use Java 17 since we can't get 21 working
+      java: corretto17
     commands:
+      # Install Maven to a user-writable location
       - export MAVEN_VERSION=3.9.6
       - wget https://dlcdn.apache.org/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz
-      - tar xzf apache-maven-$MAVEN_VERSION-bin.tar.gz -C /opt
-      - ln -s /opt/apache-maven-$MAVEN_VERSION/bin/mvn /usr/bin/mvn
+      - tar xzf apache-maven-$MAVEN_VERSION-bin.tar.gz -C /root
+      - export PATH=/root/apache-maven-$MAVEN_VERSION/bin:$PATH
       - mvn -v
+      
+  pre_build:
+    commands:
+      - mvn clean
       
   build:
     commands:
-      - mvn clean package
+      - mvn package
+      
 artifacts:
   files:
     - 'target/*.jar'
+  base-directory: '.'
