@@ -33,11 +33,19 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+      # Create the tar file specifically expected by CodeDeploy
+      - mkdir -p build-output
+      - cp target/twig-0.0.4-core.jar build-output/
+      - cp -r scripts/* build-output/ || echo "No scripts directory found"
+      - cp appspec.yml build-output/ || echo "No appspec.yml found"
+      - cp pom.xml build-output/
+      - cd build-output && tar -cf ../twig-app.tar .
+      - cd .. && cp twig-app.tar build-output/
+      - ls -la build-output/
       
 artifacts:
   files:
-    - target/twig-0.0.4-core.jar
+    - twig-app.tar
+    - build-output/**/*
     - appspec.yml
-    - scripts/**/*
-    - pom.xml
   discard-paths: no
