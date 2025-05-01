@@ -4,21 +4,24 @@ phases:
     runtime-versions:
       java: corretto17
     commands:
+      - echo "Setting up Java environment"
       - export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64
       - export PATH=$JAVA_HOME/bin:$PATH
       - java -version
       - mvn -v
   pre_build:
     commands:
+      - echo "Cleaning previous build"
       - mvn clean
   build:
     commands:
+      - echo "Building with Maven"
       - mvn package -Dmaven.compiler.release=17
   post_build:
     commands:
-      - ls -la target/
-      - echo "Build completed on $(date)"
+      - echo "Build artifacts:"
+      - ls -la target/ || echo "No target directory found"
 artifacts:
   files:
-    - 'target/twig-*-core.jar'
+    - 'target/*.jar'
   base-directory: '.'
