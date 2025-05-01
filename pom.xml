@@ -6,53 +6,27 @@
     
     <groupId>j4np</groupId>
     <artifactId>twig</artifactId>
-    <version>${revision}</version>
+    <version>0.0.4</version>
     <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <revision>0.0.4</revision>
-        <version>1.1.1</version>
-        <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>j4np</groupId>
             <artifactId>j4np-ui</artifactId>
-            <version>${version}</version>
+            <version>1.1.1</version>
         </dependency>
     </dependencies>
 
-    <repositories>
-        <repository>
-            <id>clas12-maven</id>
-            <url>https://clasweb.jlab.org/clas12maven/j4np/maven</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>Twig Distribution</name>
-            <url>https://maven.pkg.github.com/gavalian/twig</url>
-        </repository>
-    </distributionManagement>
-    
     <build>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>2.8</version>
-            </extension>
-        </extensions>
-
         <plugins>
-            <!-- Updated compiler plugin for Java 17 support -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -60,12 +34,9 @@
                 <configuration>
                     <release>17</release>
                     <encoding>UTF-8</encoding>
-                    <showWarnings>true</showWarnings>
-                    <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
-
-            <!-- Shade plugin for creating executable jar -->
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -84,29 +55,9 @@
                                     <mainClass>twig.demo.RunDemo</mainClass>
                                 </transformer>
                             </transformers>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <!-- Resources plugin to ensure proper encoding -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
             </plugin>
         </plugins>
     </build>
