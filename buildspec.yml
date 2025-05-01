@@ -1,17 +1,24 @@
 version: 0.2
 phases:
   install:
+    runtime-versions:
+      java: corretto17
     commands:
-      - wget https://corretto.aws/downloads/latest/amazon-corretto-21-x64-linux-jdk.tar.gz
-      - tar xzf amazon-corretto-21-x64-linux-jdk.tar.gz
-      - export JAVA_HOME=$PWD/amazon-corretto-21.0.1.12.1-linux-x64
+      - export JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto.x86_64
       - export PATH=$JAVA_HOME/bin:$PATH
+      - java -version
+      - mvn -v
+  pre_build:
+    commands:
+      - mvn clean
   build:
     commands:
-      - mvn clean package
-      - docker build -t twig-app .
-      - docker save twig-app > twig-app.tar
+      - mvn package -Dmaven.compiler.release=17
+  post_build:
+    commands:
+      - ls -la target/
+      - echo "Build completed on $(date)"
 artifacts:
   files:
-    - '**/*'
-  base-directory: 'target'
+    - 'target/twig-*-core.jar'
+  base-directory: '.'
