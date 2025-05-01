@@ -7,10 +7,8 @@ phases:
     commands:
       - mvn clean package
       - docker build -t twig-app .
-  post_build:
-    commands:
-      - echo "Build completed on $(date)"
+      - docker save twig-app > twig-app.tar
 artifacts:
   files:
-    - target/twig-*.jar
-    - Dockerfile
+    - '**/*'
+  base-directory: 'target'
