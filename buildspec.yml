@@ -1,33 +1,16 @@
 version: 0.2
-
 phases:
   install:
     runtime-versions:
       java: corretto17
-    commands:
-      - echo "Installing Docker and dependencies..."
-      - apt-get update && apt-get install -y docker.io
-
-  pre_build:
-    commands:
-      - echo "Building the Java application..."
-      - mvn clean package
-
   build:
     commands:
-      - echo "Building Docker image..."
-      - docker build --build-arg VERSION=${VERSION} -t twig-app .
-      - docker save -o twig-app.tar twig-app
-
+      - mvn clean package
+      - docker build -t twig-app .
   post_build:
     commands:
-      - echo "Uploading Docker image to EC2..."
-      - mkdir -p ~/.ssh
-      - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-      - chmod 600 ~/.ssh/id_rsa
-      - scp -o StrictHostKeyChecking=no twig-app.tar ec2-user@$EC2_IP:/home/ec2-user/
-      - ssh -o StrictHostKeyChecking=no ec2-user@$EC2_IP "docker load -i twig-app.tar && ./deploy.sh"
-
-env:
-  variables:
-    VERSION: "0.0.4"   # Match your pom.xml version
+      - echo "Build completed on $(date)"
+artifacts:
+  files:
+    - target/twig-*.jar
+    - Dockerfile
