@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       java: corretto21
     commands:
-      # Install Maven explicitly
+      
       - echo Installing Maven...
       - export MAVEN_VERSION=3.9.6
       - wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -P /tmp
@@ -24,7 +24,7 @@ phases:
       - echo $JAVA_HOME
       - echo PATH=$PATH
       - mvn -v
-      # Create scripts directory if it doesn't exist
+      
       - mkdir -p scripts
       
   build:
